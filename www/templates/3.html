@@ -1,0 +1,18 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>live cam 接收页面</title>
+</head>
+<body>
+    <img id="receiver" style="width:320px;height:240px"/>
+    <script type="text/javascript" charset="utf-8">
+        var image = document.getElementById('receiver');
+        draw = function()
+        {
+            image.src=localStorage.video;
+			setTimeout(draw,90);
+        }
+		draw();
+    </script>
+</body>
+</html>
