@@ -11,6 +11,7 @@ create table users (
     `passwd` varchar(50) not null,
     `admin` bool not null,
     `name` varchar(50) not null,
+	UNIQUE INDEX `name_user_UNIQUE` (`name` ASC),
     primary key (`id`)
 ) engine=innodb default charset=utf8;
 
@@ -27,7 +28,7 @@ create table comments (
     `robot_id` varchar(50) not null,
     `robot_name` varchar(50) not null,
 	`r_position` varchar(50) not null,
-    `r_image` varchar(500) not null,
+    `r_image` blob not null,
     `r_time` real not null,
     primary key (`id`)
 ) engine=innodb default charset=utf8;
