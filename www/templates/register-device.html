@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="../static/css/uikit.min.css" />
+		<link rel="stylesheet" href="../static/css/components/search.css" />
+		<link rel="stylesheet" href="../static/css/components/slideshow.css" />
+		<link rel="stylesheet" href="../static/css/components/slidenav.css" />
+		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
+		<link rel="stylesheet" href="../static/css/components/form-password.css" />
+        <script src="../static/js/jquery.js"></script>
+        <script src="../static/js/uikit.min.js"></script>
+		<script src="../static/js/components/autocomplete.js"></script>
+        <script src="../static/js/components/search.js"></script>
+		<script src="../static/js/components/slideshow.js"></script>
+		<script src="../static/js/components/slideshow-fx.js"></script>
+		<script src="../static/js/components/form-password.js"></script>
+
+    </head>
+    <body>
+	
+	<!-- 主页和用户中心 导航 -->
+		<nav class="uk-navbar">
+		
+			<ul class="uk-navbar-nav">
+				<li><a href="/home"><i class="uk-icon-home"></i> Home</a></li>
+			</ul>
+	
+			<div class="uk-navbar-flip">
+				<ul class="uk-navbar-nav">
+					<li class="uk-parent" data-uk-dropdown>
+						<a href=""><i class="uk-icon-user"></i> admin</a>
+						<div class="uk-dropdown uk-dropdown-navbar">
+							<ul class="uk-nav uk-nav-navbar">
+								<li><a href="#"><i class="uk-icon-sign-out"></i> 登出</a></li>
+								<li><a href="#"><i class="uk-icon-gears"></i> 控制台</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+	
+		</nav>
+	
+	<!-- 课程|教学方案|合作单位|产品购买|下载|新闻动态 导航   搜索-->
+		<nav class="uk-navbar">
+		
+			<ul class="uk-navbar-nav">
+			
+				<li class="uk-parent" data-uk-dropdown>
+					<a href="">课程</a>
+
+					<div class="uk-dropdown uk-dropdown-navbar">
+						<ul class="uk-nav uk-nav-navbar">
+							<li><a href="#">科学</a></li>
+							<li><a href="#">文化</a></li>
+							<li><a href="#">艺术</a></li>
+							<li><a href="#">steam</a></li>
+							<li><a href="#">人工智能</a></li>
+							<li class="uk-nav-divider"></li>
+							<li><a href="#">其他</a></li>
+						</ul>
+					</div>
+
+				</li>
+				
+				<li><a href="">教学方案</a></li>
+				<li><a href="">合作单位</a></li>
+				<li><a href="">产品购买</a></li>
+				<li><a href="">下载</a></li>
+				<li><a href="">新闻动态</a></li>
+
+			</ul>
+
+			<div class="uk-navbar-flip">
+					<div class="uk-navbar-content">
+						<form class="uk-search" data-uk-search>
+							<input class="uk-search-field" type="search" placeholder="search...">
+						</form>
+					</div>
+			</div>
+	
+		</nav>
+		
+	<!--  设备板块  -->
+	<div class="uk-width-2-3">
+		<h1>设备注册</h1>
+		<form id="vm" v-on="submit:submit" class="uk-form uk-form-stacked">
+			
+			<div class="uk-form-row">
+				<label class="uk-form-lable">设备名：</label>
+				<div class="uk-form-controls">
+					<input id="device-name" v-model="name" type="text" maxlength="50" placeholder="设备名">
+				</div>
+			</div>
+			
+			<div class="uk-form-row">
+				<label class="uk-form-lable">设备类型：</label>
+				<div class="uk-form-controls">
+					<select id="device-type">
+						<option>单片机</option>
+						<option>远程模块</option>
+						<option>其他</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="uk-form-row">
+				<label class="uk-form-lable">备注：</label>
+				<div class="uk-form-controls">
+					<textarea id="device-remark" cols="30" rows="5" placeholder="备注"></textarea>
+				</div>
+			</div>
+			
+			<div class="uk-form-row">
+				<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-registered"></i> 注册</button>
+			</div>
+			
+		</form>
+	</div>
+
+	
+	<!--  页脚板块 -->	
+		<ul class="uk-nav uk-nav-side uk-nav-parent-icon" data-uk-nav>
+			<li><a href="">Item</a></li>
+			<li class="uk-active"><a href="">Active</a></li>
+
+			<li class="uk-parent">
+				<a href="#">Parent</a>
+				<ul class="uk-nav-sub">
+					<li><a href="">Sub item</a></li>
+					<li><a href="">Sub item</a>
+						<ul>
+							<li><a href="">Sub item</a></li>
+							<li><a href="">Sub item</a></li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+
+			<li class="uk-parent">
+				<a href="#">Parent</a>
+				<ul class="uk-nav-sub">
+					<li><a href="">Sub item</a></li>
+					<li><a href="">Sub item</a></li>
+				</ul>
+			</li>
+
+			<li><a href="">Item</a></li>
+
+			<li class="uk-nav-header">Header</li>
+			<li class="uk-parent"><a href=""><i class="uk-icon-star"></i> Parent</a></li>
+			<li><a href=""><i class="uk-icon-twitter"></i> Item</a></li>
+			<li class="uk-nav-divider"></li>
+			<li><a href=""><i class="uk-icon-rss"></i> Item</a></li>
+		</ul>
+
+	
+    </body>
+</html>
