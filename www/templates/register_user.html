@@ -9,6 +9,8 @@
 		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
 		<link rel="stylesheet" href="../static/css/components/form-password.css" />
         <script src="../static/js/jquery.js"></script>
+		<script src="../static/js/vue.min.js"></script>
+		<script src="../static/js/awesome.js"></script>
         <script src="../static/js/uikit.min.js"></script>
 		<script src="../static/js/components/autocomplete.js"></script>
         <script src="../static/js/components/search.js"></script>
@@ -17,6 +19,48 @@
 		<script src="../static/js/components/form-password.js"></script>
 
     </head>
+	
+	<!-- js处理板块 -->
+	<script>
+
+	$(function () {
+		var vm = new Vue({
+			el: '#vm',
+			data: {
+				name: '',
+				password1: '',
+				password2: ''
+			},
+			methods: {
+				submit: function (event) {
+					event.preventDefault();
+					var $form = $('#vm');
+					if (! this.name.trim()) {
+						return $form.showFormError('请输入昵称');
+					}
+					if (this.password1.length < 6) {
+						return $form.showFormError('口令长度至少为6个字符');
+					}
+					if (this.password1 !== this.password2) {
+						return $form.showFormError('两次输入的口令不一致');
+					}
+					$form.postJSON('/api/users', {
+						name: this.name.trim(),
+						passwd: this.password1
+					}, function (err, r) {
+						if (err) {
+							return $form.showFormError(err);
+						}
+						return location.assign('/');
+					});
+				}
+			}
+		});
+		$('#vm').show();
+	});
+
+	</script>
+	
     <body>
 	
 	<!-- 主页和用户中心 导航 -->
@@ -99,7 +143,7 @@
 				<label class="uk-form-lable">设置密码：</label>
 				<div class="uk-form-controls">
 					<div class="uk-form-password">
-						<input v-model="name" type="password" maxlength="50" placeholder="输入密码">
+						<input v-model="password1" type="password" maxlength="50" placeholder="输入密码">
 						<a href="" class="uk-form-password-toggle" data-uk-form-password>Show</a>
 					</div>
 				</div>
@@ -109,7 +153,7 @@
 				<label class="uk-form-lable">重复密码：</label>
 				<div class="uk-form-controls">
 					<div class="uk-form-password">
-						<input v-model="name" type="password" maxlength="50" placeholder="输入密码">
+						<input v-model="password2" type="password" maxlength="50" placeholder="输入密码">
 						<a href="" class="uk-form-password-toggle" data-uk-form-password>Show</a>
 					</div>
 				</div>
