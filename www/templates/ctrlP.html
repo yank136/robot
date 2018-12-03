@@ -66,7 +66,8 @@
 			<div class="uk-width-6-10 uk-text-center">
 				<div class="uk-panel uk-panel-box">
 
-					<video autoplay id="sourcevid" width="320" height="240"></video>
+					<video autoplay id="sourcevid0" width="320" height="240"></video>
+					<video autoplay id="sourcevid1" width="320" height="240"></video>
 
 				</div>
 			</div>
@@ -94,7 +95,8 @@
 			<div class="uk-width-6-10 uk-text-center">
 				<div class="uk-panel uk-panel-box">
 				
-					<canvas id="output" width="320" height="240"></canvas>
+					<canvas id="output0" width="320" height="240"></canvas>
+					<canvas id="output1" width="320" height="240"></canvas>
 				
 				</div>
 			</div>
@@ -113,9 +115,12 @@
 	<!-- js处理区 -->
 	<script type="text/javascript" charset="utf-8">
 
-        var back = document.getElementById('output');
+        var back = document.getElementById('output0');
+		var back1 = document.getElementById('output1');
         var backcontext = back.getContext('2d');
+		var backcontext1 = back1.getContext('2d');
         var video = document.getElementsByTagName('video')[0];
+		var video1 = document.getElementsByTagName('video')[1];
         
 		function change(a){
 			a.src="../static/img/1.jpg";
@@ -126,11 +131,13 @@
 		
         var success = function(stream){
             video.src = window.URL.createObjectURL(stream);
+			video1.src = window.URL.createObjectURL(stream);
         }
 
         var draw = function(){
             try{
                 backcontext.drawImage(video,0,0, back.width, back.height);
+				backcontext1.drawImage(video1,0,0, back1.width, back1.height);
             }catch(e){
                 if (e.name == "NS_ERROR_NOT_AVAILABLE") {
                     return setTimeout(draw, 90);
@@ -140,6 +147,7 @@
             }
             if(video.src){
                 localStorage.video=back.toDataURL("image/jpeg",0.5);
+				localStorage.video1=back1.toDataURL("image/jpeg",0.5);
             }
             setTimeout(draw, 90);
         }
