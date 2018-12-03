@@ -9,12 +9,53 @@
 		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
 		<link rel="stylesheet" href="../static/css/components/form-password.css" />
         <script src="../static/js/jquery.js"></script>
+		<script src="../static/js/vue.min.js"></script>
+		<script src="../static/js/awesome.js"></script>
         <script src="../static/js/uikit.min.js"></script>
 		<script src="../static/js/components/autocomplete.js"></script>
         <script src="../static/js/components/search.js"></script>
 		<script src="../static/js/components/slideshow.js"></script>
 		<script src="../static/js/components/slideshow-fx.js"></script>
 		<script src="../static/js/components/form-password.js"></script>
+		
+	<!-- js处理板块 -->
+	<script>
+
+	$(function () {
+		var vm = new Vue({
+			el: '#vm',
+			data: {
+				name: '',
+				r_type: '',
+				remarks: ''
+			},
+			methods: {
+				submit: function (event) {
+					event.preventDefault();
+					var $form = $('#vm');
+					if (! this.name.trim()) {
+						return $form.showFormError('请输入昵称');
+					}
+					if (! this.r_type.trim()) {
+						return $form.showFormError('请选择设备类型');
+					}
+					$form.postJSON('/api/devices', {
+						name: this.name.trim(),
+						r_type: this.r_type,
+						remarks: this.remarks
+					}, function (err, r) {
+						if (err) {
+							return $form.showFormError(err);
+						}
+						return location.assign('/console');
+					});
+				}
+			}
+		});
+		$('#vm').show();
+	});
+
+	</script>
 
     </head>
     <body>
@@ -86,6 +127,7 @@
 	<div class="uk-width-2-3">
 		<h1>设备注册</h1>
 		<form id="vm" v-on="submit:submit" class="uk-form uk-form-stacked">
+			<div class="uk-alert uk-alert-danger uk-hidden"></div>
 			
 			<div class="uk-form-row">
 				<label class="uk-form-lable">设备名：</label>
@@ -97,10 +139,10 @@
 			<div class="uk-form-row">
 				<label class="uk-form-lable">设备类型：</label>
 				<div class="uk-form-controls">
-					<select id="device-type">
-						<option>单片机</option>
-						<option>远程模块</option>
-						<option>其他</option>
+					<select id="device-type" v-model="r_type">
+						<option value="1">单片机</option>
+						<option value="2">远程模块</option>
+						<option value="3">其他</option>
 					</select>
 				</div>
 			</div>
@@ -108,7 +150,7 @@
 			<div class="uk-form-row">
 				<label class="uk-form-lable">备注：</label>
 				<div class="uk-form-controls">
-					<textarea id="device-remark" cols="30" rows="5" placeholder="备注"></textarea>
+					<textarea id="device-remark" v-model="remarks" cols="30" rows="5" placeholder="备注"></textarea>
 				</div>
 			</div>
 			
