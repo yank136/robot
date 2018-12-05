@@ -13,10 +13,10 @@ import re, time, json, logging, hashlib, base64, asyncio
 from aiohttp import web
 from coroweb import get, post
 from apis import APIValueError, APIResourceNotFoundError, APIError,APIPermissionError,Page
-from models import User, Comment, Blog, next_id
+from models import User, Comment, Robot
 from config import configs
 
-COOKIRE_NAME = 'awesession'
+COOKIE_NAME = 'awesession'
 _COOKIE_KEY = configs.session.secret
 
 _re_email = re.compile(r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
@@ -47,8 +47,7 @@ def user2cookie(user, max_age):
     #build cookie string by: id-expires-sha1
     expires = str(int(time.time()+max_age))
     s = '%s-%s-%s-%s' % (user.id, user.passwd, expires,_COOKIE_KEY)
-    L =[user.id, expires, hashlib.sha1(s.encode('utf-8')).hexdigest()]
-    return '-'.join(L)
+    return s
 
 async def cookie2user(cookie_str):
     '''
@@ -58,37 +57,139 @@ async def cookie2user(cookie_str):
         return None
     try:
         L = cookie_str.split('-')
-        if len(L)!=3:
+        if len(L)!=4:
             return None
-        uid,expires,sha1 = L
+        uid,upasswd,expires,cookie_key = L
         if int(expires)<time.time():
             return None
         user = await User.find(uid)
         if user is None:
             return None
-        s = '%s-%s-%s-%s' % (uid, user.passwd, expires, _COOKIE_KEY)
-        if sha1 != hashlib.sha1(s.encode('utf-8')).hexdigest():
-            logging.info('invalid sha1')
+        if user.passwd != upasswd:
+            logging.info('invalid password')
             return None
         user.passwd = '******'
         return user
     except Exception as e:
         logging.exception(e)
         return None
-'''
+
+''' get '''
+
 @get('/')
-def index(request):
-    summary = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    blogs = [
-        Blog(id='1', name='Test Blog', summary=summary, created_at=time.time()-120),
-        Blog(id='2', name='Something New', summary=summary, created_at=time.time()-3600),
-        Blog(id='3', name='Learn Swift', summary=summary, created_at=time.time()-7200)
-    ]
+def index():
     return {
-        '__template__': 'blogs.html',
-        'blogs': blogs
+            '__template__' : 'home.html'
     }
-'''    
+    
+@get('/console')
+def ctrlP():
+    return {
+            '__template__' : 'ctrlP.html'
+    }
+
+@get('/registerUser')
+def registerUser():
+    return {
+            '__template__' : 'register_user.html'        
+    }
+    
+@get('/registerDevice')
+def registerDevice():
+    return {
+            '__template__' : 'register_device.html'
+    }
+    
+@get('/manage/users')
+def manageUsers():
+    return {
+            '__template__' : 'manage_users.html'        
+    }
+    
+@get('/manage/devices')
+def manageDevices():
+    return {
+            '__template__' : 'manage_devices.html'
+    }
+    
+@get('/signin')
+def signin():
+    return {
+            '__template__' : 'signin.html'
+    }
+
+@get('/signout')
+def signout(request):
+    referer = request.headers.get('Referer')
+    r = web.HTTPFound(referer or '/')
+    r.set_cookie(COOKIE_NAME, '-deleted-', max_age=0, httponly=True)
+    logging.info('user signed out.')
+    return r
+    
+''' get_api '''
+
+@get('/api/users')
+async def getUsers():
+    users=await User.findAll()
+    return dict(users=users)
+
+@get('/api/devices')
+async def getDevices():
+    devices=await Robot.findAll()
+    return dict(devices=devices)
+
+''' post_api '''
+
+@post('/api/users')
+async def apiRegistUser(*,name,passwd):
+    if not name or not name.strip():
+        raise APIValueError('name','invalid name.')
+    if not passwd or not name.strip():
+        raise APIValueError('name','invalid password.')
+    user = await User.findAll('name=?',[name])
+    if len(user):
+        raise APIError('register:failed', 'name', 'Name is already in use.')
+    u=User(name=name.strip(),passwd=passwd)
+    await u.save()
+    # authenticate ok, set cookie:
+    r = web.Response()
+    r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
+    user.passwd = '******'
+    r.content_type = 'application/json'
+    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
+    return u
+
+@post('/api/devices')
+async def apiRegistDevice(*,name,r_type,remarks):
+    if not name or not name.strip():
+        raise APIValueError('name','invalid name.')
+    r = Robot(name=name,r_type=r_type,remarks=remarks,passwd='123456')
+    await r.save()
+    return r
+
+@post('/api/authenticate')
+async def userAuthenticate(*,name,passwd):
+    if not name:
+        raise APIValueError('name','invalid name.')
+    if not passwd:
+        raise APIValueError('passwd','invalid password.')
+    users = await User.findAll('name=?',[name])
+    if len(users)==0:
+        raise APIValueError('name','Name not exist.')
+    user=users[0]
+    if user.passwd != passwd:
+        raise APIValueError('passwd','Invalid password.')
+    # authenticate ok, set cookie:
+    r = web.Response()
+    r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
+    user.passwd = '******'
+    r.content_type = 'application/json'
+    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
+    return r
+
+
+
+'''  
 @get('/')
 def index(request):
     return {
@@ -108,10 +209,16 @@ async def get_blog(id):
             'comments': comments
             }
     
-@get('/register')
-def register():
+@get('/registerUser')
+def registerUser():
     return {
-            '__template__':'register.html'
+            '__template__':'register-user.html'
+            }
+    
+@get('/registerDevice')
+def registerDevice():
+    return {
+            '__template__':'register-device.html'
             }
     
 @get('/signin')
@@ -137,12 +244,19 @@ def signout(request):
 
 @get('/api/users')
 async def api_get_users():
-    users = await User.findAll(orderBy='created_at desc')
+    users = await User.findAll()
     for u in users:
         u.passwd = '******'
     return dict(users=users)
 
-@get('/manage/blogs')
+@get('/api/devices')
+async def api_get_devices():
+    robots = await Comment.findAll()
+    for r in robots:
+        r.passwd = '******'
+    return dict(robots=robots)
+
+@get('/manage/robots')
 def manage_blogs(*, page='1'):
     return {
             '__template__': 'manage_blogs.html',
@@ -235,3 +349,13 @@ async def api_create_blog(request,*,name,summary,content):
     blog = Blog(user_id=request.__user__.id,user_name=request.__user__.name,user_image=request.__user__.image,name=name.strip(),summary=summary.strip(),content=content.strip())
     await blog.save()
     return blog
+
+
+@get('/api/robot')
+async def api_get_robot():
+    users = await User.findAll()
+    robots = await Robot.findAll()
+    comments = await Comment.findAll()
+    return dict(users=users),dict(robots=robots),dict(comments=comments)
+        
+'''
