@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="../static/css/uikit.min.css" />
+		<link rel="stylesheet" href="../static/css/components/search.css" />
+		<link rel="stylesheet" href="../static/css/components/slideshow.css" />
+		<link rel="stylesheet" href="../static/css/components/slidenav.css" />
+		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
+        <script src="../static/js/jquery.js"></script>
+		<script src="../static/js/vue.min.js"></script>
+		<script src="../static/js/awesome.js"></script>
+        <script src="../static/js/uikit.min.js"></script>
+		<script src="../static/js/components/autocomplete.js"></script>
+        <script src="../static/js/components/search.js"></script>
+		<script src="../static/js/components/slideshow.js"></script>
+		<script src="../static/js/components/slideshow-fx.js"></script>
+
+	<!-- js处理模块 -->
+		<script>
+
+		function initVM(data) {
+			$('#vm').show();
+			var vm = new Vue({
+				el: '#vm',
+				data: {
+					users: data.users,
+				}
+			});
+		}
+
+		$(function() {
+			getJSON('/api/users',
+			function (err, results) {
+				if (err) {
+					return fatal(err);
+				}
+				$('#loading').hide();
+				initVM(results);
+			});
+		});
+
+		</script>
+		
+    </head>
+    <body>
+	
+	<!-- 主页和用户中心 导航 -->
+		<nav class="uk-navbar">
+		
+			<ul class="uk-navbar-nav">
+				<li><a href="/"><i class="uk-icon-home"></i> Home</a></li>
+			</ul>
+	
+			<div class="uk-navbar-flip">
+				<ul class="uk-navbar-nav">
+					<li class="uk-parent" data-uk-dropdown>
+						<a href=""><i class="uk-icon-user"></i> admin</a>
+						<div class="uk-dropdown uk-dropdown-navbar">
+							<ul class="uk-nav uk-nav-navbar">
+								<li><a href="#"><i class="uk-icon-sign-out"></i> 登出</a></li>
+								<li><a href="/console"><i class="uk-icon-gears"></i> 控制台</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+	
+		</nav>
+	
+	<!-- 用户设备选择板块 -->
+	    <div class="uk-width-1-1 uk-margin-bottom">
+			<div class="uk-panel uk-panel-box">
+				<ul class="uk-breadcrumb">
+					<li><a href="/manage/devices">设备</a></li>
+					<li class="uk-active"><span>用户</span></li>
+				</ul>
+			</div>
+		</div>
+	
+	<!-- 用户管理板块 -->
+
+		<div id="loading" class="uk-width-1-1 uk-text-center">
+			<span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> 正在加载...</span>
+		</div>
+
+		<div id="vm" class="uk-width-1-1">
+			<table class="uk-table uk-table-hover">
+				<thead>
+					<tr>
+						<th class="uk-width-4-10">ID</th>
+						<th class="uk-width-4-10">昵称</th>
+						<th class="uk-width-2-10">权限</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-repeat="user: users" >
+						<td>
+							<span v-text="user.id"></span>
+						</td>
+						<td>
+							<span v-text="user.name"></span>
+							<span v-if="user.admin" style="color:#d05"><i class="uk-icon-key"></i> 管理员</span>
+						</td>
+						<td>
+							<span v-text="user.admin"></span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>		
+	
+	<!--  页脚板块 -->	
+		<ul class="uk-nav uk-nav-side uk-nav-parent-icon" data-uk-nav>
+			<li><a href="">Item</a></li>
+			<li class="uk-active"><a href="">Active</a></li>
+
+			<li class="uk-parent">
+				<a href="#">Parent</a>
+				<ul class="uk-nav-sub">
+					<li><a href="">Sub item</a></li>
+					<li><a href="">Sub item</a>
+						<ul>
+							<li><a href="">Sub item</a></li>
+							<li><a href="">Sub item</a></li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+
+			<li class="uk-parent">
+				<a href="#">Parent</a>
+				<ul class="uk-nav-sub">
+					<li><a href="">Sub item</a></li>
+					<li><a href="">Sub item</a></li>
+				</ul>
+			</li>
+
+			<li><a href="">Item</a></li>
+
+			<li class="uk-nav-header">Header</li>
+			<li class="uk-parent"><a href=""><i class="uk-icon-star"></i> Parent</a></li>
+			<li><a href=""><i class="uk-icon-twitter"></i> Item</a></li>
+			<li class="uk-nav-divider"></li>
+			<li><a href=""><i class="uk-icon-rss"></i> Item</a></li>
+		</ul>
+		
+    </body>
+</html>

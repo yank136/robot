@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="../static/css/uikit.min.css" />
+		<link rel="stylesheet" href="../static/css/components/search.css" />
+		<link rel="stylesheet" href="../static/css/components/slideshow.css" />
+		<link rel="stylesheet" href="../static/css/components/slidenav.css" />
+		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
+        <script src="../static/js/jquery.js"></script>
+        <script src="../static/js/uikit.min.js"></script>
+		<script src="../static/js/components/autocomplete.js"></script>
+        <script src="../static/js/components/search.js"></script>
+		<script src="../static/js/components/slideshow.js"></script>
+		<script src="../static/js/components/slideshow-fx.js"></script>
+
+    </head>
+    <body>
+	
+	<!-- 主页和用户中心 导航 -->
+		<nav class="uk-navbar">
+		
+			<ul class="uk-navbar-nav">
+				<li><a href="/"><i class="uk-icon-home"></i> Home</a></li>
+			</ul>
+	
+			<div class="uk-navbar-flip">
+				<ul class="uk-navbar-nav">
+					<li class="uk-parent" data-uk-dropdown>
+						<a href=""><i class="uk-icon-user"></i> admin</a>
+						<div class="uk-dropdown uk-dropdown-navbar">
+							<ul class="uk-nav uk-nav-navbar">
+								<li><a href="#"><i class="uk-icon-sign-out"></i> 登出</a></li>
+								<li><a href="/manage/devices"><i class="uk-icon-usb"></i> 设备管理</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+	
+		</nav>
+	
+	<!--  控制台模式 选择模块 -->
+		<hr>
+		<div class="uk-button-group">
+			<button class="uk-button">控制台</button>
+			<div data-uk-dropdown="{mode:'click'}">
+				<button class="uk-button"><i class="uk-icon-caret-down"></i></button>
+				<div class="uk-dropdown uk-dropdown-small">
+					<ul class="uk-nav uk-nav-dropdown">
+						<li><a href="#">人脸识别</a></li>
+						<li><a href="#">巡线</a></li>
+						<li><a href="#">人脸跟随</a></li>
+						<li><a href="#">避障</a></li>
+						<li><a href="#">遥控</a></li>
+						<li class="uk-nav-divider"></li>
+						<li><a href="#">自动演示</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+	<!--  视图区： 摄像头视频区|控制面板区|图像信息区|状态信息文本区 -->			
+		<div class="uk-grid uk-grid-small" data-uk-grid-margin>
+		<!-- 视频区 -->
+			<div class="uk-width-6-10 uk-text-center">
+				<div class="uk-panel uk-panel-box">
+
+					<video autoplay id="sourcevid0" width="320" height="240"></video>
+					<video autoplay id="sourcevid1" width="320" height="240"></video>
+
+				</div>
+			</div>
+		<!-- 控制区 -->
+			<div class="uk-width-4-10">
+				<div class="uk-panel uk-panel-box">
+				
+					<form style="background-color:white">
+						<table id="table" width="320" height="240" align="center">
+							<tr>
+								<td></td><td><img id="前" src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></a></td><td></trd>
+							</tr>
+							<tr>
+								<td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></trd>
+							</tr>
+							<tr>
+								<td></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></td><td></trd>
+							</tr>
+						</table>
+					</form>
+					
+				</div>
+			</div>
+		<!-- 图像区 -->
+			<div class="uk-width-6-10 uk-text-center">
+				<div class="uk-panel uk-panel-box">
+				
+					<canvas id="output0" width="320" height="240"></canvas>
+					<canvas id="output1" width="320" height="240"></canvas>
+				
+				</div>
+			</div>
+		<!-- 文本区 -->
+			<div class="uk-width-4-10">
+				<div class="uk-panel uk-panel-box">
+					<form style="background-color:white">
+						<canvas id="output" width="320" height="240"></canvas>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		
+		
+	<!-- js处理区 -->
+	<script type="text/javascript" charset="utf-8">
+
+        var back = document.getElementById('output0');
+		var back1 = document.getElementById('output1');
+        var backcontext = back.getContext('2d');
+		var backcontext1 = back1.getContext('2d');
+        var video = document.getElementsByTagName('video')[0];
+		var video1 = document.getElementsByTagName('video')[1];
+        
+		function change(a){
+			a.src="../static/img/1.jpg";
+		}
+		function change0(a){
+			a.src="../static/img/0.jpg";
+		}
+		
+        var success = function(stream){
+            video.src = window.URL.createObjectURL(stream);
+			video1.src = window.URL.createObjectURL(stream);
+        }
+
+        var draw = function(){
+            try{
+                backcontext.drawImage(video,0,0, back.width, back.height);
+				backcontext1.drawImage(video1,0,0, back1.width, back1.height);
+            }catch(e){
+                if (e.name == "NS_ERROR_NOT_AVAILABLE") {
+                    return setTimeout(draw, 90);
+                } else {
+                    throw e;
+                }
+            }
+            if(video.src){
+                localStorage.video=back.toDataURL("image/jpeg",0.5);
+				localStorage.video1=back1.toDataURL("image/jpeg",0.5);
+            }
+            setTimeout(draw, 90);
+        }
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        navigator.getUserMedia({video:true, audio:false}, success, console.log);
+		draw();
+    </script>	
+	
+    </body>
+</html>

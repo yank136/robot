@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="../static/css/uikit.min.css" />
+		<link rel="stylesheet" href="../static/css/components/search.css" />
+		<link rel="stylesheet" href="../static/css/components/slideshow.css" />
+		<link rel="stylesheet" href="../static/css/components/slidenav.css" />
+		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
+		<link rel="stylesheet" href="../static/css/components/form-password.css" />
+        <script src="../static/js/jquery.js"></script>
+		<script src="../static/js/vue.min.js"></script>
+		<script src="../static/js/awesome.js"></script>
+        <script src="../static/js/uikit.min.js"></script>
+		<script src="../static/js/components/autocomplete.js"></script>
+        <script src="../static/js/components/search.js"></script>
+		<script src="../static/js/components/slideshow.js"></script>
+		<script src="../static/js/components/slideshow-fx.js"></script>
+		<script src="../static/js/components/form-password.js"></script>
+
+	<!-- js处理板块 -->
+		<script>
+		<!-- 登录 -->
+		$(function() {
+			var vmAuth = new Vue({
+				el: '#vm',
+				data: {
+					name: '',
+					passwd: ''
+				},
+				methods: {
+					submit: function(event) {
+						event.preventDefault();
+						var
+							$form = $('#vm'),
+							name = this.name.trim(),
+							data = {
+								name: name,
+								passwd: this.passwd
+							};
+						$form.postJSON('/api/authenticate', data, function(err, result) {
+							if (! err) {
+								location.assign('/');
+							}
+						});
+					}
+				}
+			});
+		});
+
+		</script>
+		
+    </head>
+	
+    <body>
+	
+	<!-- 主页和用户中心 导航 -->
+		<nav class="uk-navbar">
+		
+			<ul class="uk-navbar-nav">
+				<li><a href="/"><i class="uk-icon-home"></i> Home</a></li>
+			</ul>
+	
+			<div class="uk-navbar-flip">
+				<ul class="uk-navbar-nav">
+				{% if __user__ %}
+					<li id="signout" class="uk-parent" data-uk-dropdown>
+						<a href=""><i class="uk-icon-user"></i> {{__user__.name}}</a>
+						<div class="uk-dropdown uk-dropdown-navbar">
+							<ul class="uk-nav uk-nav-navbar">
+								<li><a href="/signout"><i class="uk-icon-sign-out"></i> 登出</a></li>
+								<li><a href="/console"><i class="uk-icon-gears"></i> 控制台</a></li>
+							</ul>
+						</div>
+					</li>
+				{% else %}	
+					<li><a href="/registerUser"><i class="uk-icon-registered"></i> 注册</a></li>
+					<li id="signin"><a data-uk-offcanvas="{target:'#offcanvas'}"><i class="uk-icon-sign-in"></i> 登录</a></li>
+				{% endif %}	
+				</ul>
+			</div>
+	
+		</nav>
+		
+	<!-- 登录板块 -->	
+		<div id="offcanvas" class="uk-offcanvas">
+			<div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+				<form id="vm" v-on="submit: submit" class="uk-panel uk-panel-box uk-form">
+					<div class="uk-alert uk-alert-danger uk-hidden"></div>
+					<div class="uk-form-row">
+						<div class="uk-form-icon uk-width-1-1">
+							<i class="uk-icon-user"></i>
+							<input v-model="name" name="name" type="text" placeholder="昵称" maxlength="50" class="uk-width-1-1 uk-form-large">
+						</div>
+					</div>
+					<div class="uk-form-row">
+						<div class="uk-form-icon uk-width-1-1">
+							<i class="uk-icon-lock"></i>
+							<input v-model="passwd" name="passwd" type="password" placeholder="密码" maxlength="50" class="uk-width-1-1 uk-form-large">
+						</div>
+					</div>
+					<div class="uk-form-row">
+						<button type="submit" class="uk-width-1-1 uk-button uk-button-primary uk-button-large"><i class="uk-icon-sign-in"></i> 登录</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+	<!-- 课程|教学方案|合作单位|产品购买|下载|新闻动态 导航   搜索-->
+		<nav class="uk-navbar">
+		
+			<ul class="uk-navbar-nav">
+			
+				<li class="uk-parent" data-uk-dropdown>
+					<a href="">课程</a>
+
+					<div class="uk-dropdown uk-dropdown-navbar">
+						<ul class="uk-nav uk-nav-navbar">
+							<li><a href="#">科学</a></li>
+							<li><a href="#">文化</a></li>
+							<li><a href="#">艺术</a></li>
+							<li><a href="#">steam</a></li>
+							<li><a href="#">人工智能</a></li>
+							<li class="uk-nav-divider"></li>
+							<li><a href="#">其他</a></li>
+						</ul>
+					</div>
+
+				</li>
+				
+				<li><a href="">教学方案</a></li>
+				<li><a href="">合作单位</a></li>
+				<li><a href="">产品购买</a></li>
+				<li><a href="">下载</a></li>
+				<li><a href="">新闻动态</a></li>
+
+			</ul>
+
+			<div class="uk-navbar-flip">
+					<div class="uk-navbar-content">
+						<form class="uk-search" data-uk-search>
+							<input class="uk-search-field" type="search" placeholder="search...">
+						</form>
+					</div>
+			</div>
+	
+		</nav>
+	
+	<!--  欢迎页面 幻灯片 -->
+		<div class="uk-panel uk-width-3-4 uk-container-center uk-text-center">
+			<div class="uk-slidenav-position" data-uk-slideshow>
+				<ul class="uk-slideshow">
+					<li><img src="../static/img/wel-2.jpg" width="800" height="300" alt=""></li>
+					<li><img src="../static/img/wel-1.jpg" width="800" height="300" alt=""></li>
+					<li><img src="../static/img/wel-3.jpg" width="800" height="300" alt=""></li>
+				</ul>
+				<a href="#" class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous" data-uk-slideshow-item="previous" style="color: rgba(255,255,255,0.4)"></a>
+				<a href="#" class="uk-slidenav uk-slidenav-contrast uk-slidenav-next" data-uk-slideshow-item="next" style="color: rgba(255,255,255,0.4)"></a>
+				<ul class="uk-dotnav uk-dotnav-contrast uk-position-bottom uk-flex-center">
+					<li data-uk-slideshow-item="0"><a href="#">Item 1</a></li>
+					<li data-uk-slideshow-item="1"><a href="#">Item 2</a></li>
+					<li data-uk-slideshow-item="2"><a href="#">Item 3</a></li>
+				</ul>
+			</div>
+		</div>
+
+	<!--  热门课程板块 -->			
+		<hr class="uk-article-divider">
+	
+		<div class="uk-panel uk-panel-box uk-panel-box-primary uk-width-1-7 uk-container-center uk-text-center">
+			<h class="uk-h3">热门课程</h>
+		</div>
+
+		<div class="uk-panel uk-width-9-10 uk-container-center uk-text-center">
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-1.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">细胞</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-2.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">创意生活</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-3.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">单片机</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-4.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智慧城市</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-5.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智能家居</div>
+			</a>
+		</div>
+
+	<!--  推荐课程板块 -->			
+		<hr class="uk-article-divider">
+	
+		<div class="uk-panel uk-panel-box uk-panel-box-primary uk-width-1-7 uk-container-center uk-text-center">
+			<h class="uk-h3">推荐课程</h>
+		</div>
+
+		<div class="uk-panel uk-width-9-10 uk-container-center uk-text-center">
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">细胞</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">创意生活</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">单片机</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智慧城市</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智能家居</div>
+			</a>
+		</div>
+
+	<!--  免费体验板块 -->			
+		<hr class="uk-article-divider">
+	
+		<div class="uk-panel uk-panel-box uk-panel-box-primary uk-width-1-7 uk-container-center uk-text-center">
+			<h class="uk-h3">免费体验</h>
+		</div>
+
+		<div class="uk-panel uk-width-9-10 uk-container-center uk-text-center">
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">细胞</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">创意生活</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">单片机</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智慧城市</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/pic.svg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智能家居</div>
+			</a>
+		</div>		
+	
+	<!--  近期动态板块 -->			
+		<hr class="uk-article-divider">
+	
+		<div class="uk-panel uk-panel-box uk-panel-box-primary uk-width-1-7 uk-container-center uk-text-center">
+			<h class="uk-h3">近期动态</h>
+		</div>
+
+		<div class="uk-panel uk-width-9-10 uk-container-center uk-text-center">
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-1.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">细胞</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-2.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">创意生活</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-3.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">单片机</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-4.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智慧城市</div>
+			</a>
+			<a class="uk-thumbnail" href="#">
+				<img src="../static/img/k-5.jpg" width="200" height="100" alt="">
+				<div class="uk-thumbnail-caption">智能家居</div>
+			</a>
+		</div>	
+		
+	<!--  页脚板块 -->	
+		<div class="uk-margin-large-top" style="background-color:#eee; border-top:1px solid #ccc;">
+			<div class="uk-container uk-container-center uk-text-center">
+				<div class="uk-panel uk-margin-top uk-margin-bottom">
+					<p>Powered by <a href="#">Python Webapp</a>. Copyright &copy; 2018. [<a href="/console" target="_blank">Console</a>]
+					</p>
+					<p><a href="#" target="_blank">www.robot.club</a>. All rights reserved.</p>
+					<a target="_blank" href="http://www.w3.org/TR/html5/"><i class="uk-icon-html5" style="font-size:64px; color: #444;"></i></a>
+				</div>
+
+			</div>
+		</div>
+
+	
+    </body>
+</html>
