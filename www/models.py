@@ -24,6 +24,7 @@ class Robot(Model):
     name = StringField(ddl='varchar(50)')
     passwd = StringField(ddl='varchar(50)')
     r_type = StringField(ddl='varchar(50)')
+    remarks = StringField(ddl='tinytext')
 
     
 class Comment(Model):
