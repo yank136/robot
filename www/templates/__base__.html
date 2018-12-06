@@ -25,6 +25,37 @@
 	{% block beforehead %}<!-- before head  -->{% endblock %}
 	
 	{% block js %}<!-- js处理板块 -->{% endblock %}
+	
+	<!-- 登录js处理板块 -->
+		<script>
+			<!-- 登录 -->
+			$(function() {
+				var vmAuth = new Vue({
+					el: '#vm0',
+					data: {
+						name: '',
+						passwd: ''
+					},
+					methods: {
+						submit: function(event) {
+							event.preventDefault();
+							var
+								$form = $('#vm0'),
+								name = this.name.trim(),
+								data = {
+									name: name,
+									passwd: this.passwd
+								};
+							$form.postJSON('/api/authenticate', data, function(err, result) {
+								if (! err) {
+									location.assign('/');
+								}
+							});
+						}
+					}
+				});
+			});
+		</script>
 		
     </head>
 	
@@ -61,7 +92,7 @@
 	<!-- 登录板块 -->	
 		<div id="offcanvas" class="uk-offcanvas">
 			<div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
-				<form id="vm" v-on="submit: submit" class="uk-panel uk-panel-box uk-form">
+				<form id="vm0" v-on="submit: submit" class="uk-panel uk-panel-box uk-form">
 					<div class="uk-alert uk-alert-danger uk-hidden"></div>
 					<div class="uk-form-row">
 						<div class="uk-form-icon uk-width-1-1">
