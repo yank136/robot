@@ -146,18 +146,20 @@ async def apiRegistUser(*,name,passwd):
         raise APIValueError('name','invalid name.')
     if not passwd or not name.strip():
         raise APIValueError('name','invalid password.')
-    user = await User.findAll('name=?',[name])
-    if len(user):
+    users = await User.findAll('name=?',[name])
+    if len(users):
         raise APIError('register:failed', 'name', 'Name is already in use.')
-    u=User(name=name.strip(),passwd=passwd)
-    await u.save()
+    user=User(name=name.strip(),passwd=passwd)
+    await user.save()
     # authenticate ok, set cookie:
+    users = await User.findAll('name=?',[name])
+    u=users[0]
     r = web.Response()
-    r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
-    user.passwd = '******'
+    r.set_cookie(COOKIE_NAME, user2cookie(u, 86400), max_age=86400, httponly=True)
+    u.passwd = '******'
     r.content_type = 'application/json'
-    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
-    return u
+    r.body = json.dumps(u, ensure_ascii=False).encode('utf-8')
+    return r
 
 @post('/api/devices')
 async def apiRegistDevice(*,name,r_type,remarks):
