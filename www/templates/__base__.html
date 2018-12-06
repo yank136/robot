@@ -48,7 +48,7 @@
 								};
 							$form.postJSON('/api/authenticate', data, function(err, result) {
 								if (! err) {
-									location.assign('/');
+									location.reload();
 								}
 							});
 						}
@@ -76,7 +76,13 @@
 						<div class="uk-dropdown uk-dropdown-navbar">
 							<ul class="uk-nav uk-nav-navbar">
 								<li><a href="/signout"><i class="uk-icon-sign-out"></i> 登出</a></li>
+								
+							{% if __path__ != '/console' %}
 								<li><a href="/console"><i class="uk-icon-gears"></i> 控制台</a></li>
+							{% else %}
+								<li><a href="/manage/devices"><i class="uk-icon-usb"></i> 设备管理</a></li>
+							{% endif %}
+							
 							</ul>
 						</div>
 					</li>
@@ -132,6 +138,7 @@
 			</div>
 		</div>	
 
+	{% block js0 %}<!-- js处理板块后置 -->{% endblock %}
 	
     </body>
 </html>

@@ -1,45 +1,11 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title></title>
-        <link rel="stylesheet" href="../static/css/uikit.min.css" />
-		<link rel="stylesheet" href="../static/css/components/search.css" />
-		<link rel="stylesheet" href="../static/css/components/slideshow.css" />
-		<link rel="stylesheet" href="../static/css/components/slidenav.css" />
-		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
-        <script src="../static/js/jquery.js"></script>
-        <script src="../static/js/uikit.min.js"></script>
-		<script src="../static/js/components/autocomplete.js"></script>
-        <script src="../static/js/components/search.js"></script>
-		<script src="../static/js/components/slideshow.js"></script>
-		<script src="../static/js/components/slideshow-fx.js"></script>
+{% extends '__base__.html' %}
 
-    </head>
-    <body>
-	
-	<!-- 主页和用户中心 导航 -->
-		<nav class="uk-navbar">
-		
-			<ul class="uk-navbar-nav">
-				<li><a href="/"><i class="uk-icon-home"></i> Home</a></li>
-			</ul>
-	
-			<div class="uk-navbar-flip">
-				<ul class="uk-navbar-nav">
-					<li class="uk-parent" data-uk-dropdown>
-						<a href=""><i class="uk-icon-user"></i> admin</a>
-						<div class="uk-dropdown uk-dropdown-navbar">
-							<ul class="uk-nav uk-nav-navbar">
-								<li><a href="#"><i class="uk-icon-sign-out"></i> 登出</a></li>
-								<li><a href="/manage/devices"><i class="uk-icon-usb"></i> 设备管理</a></li>
-							</ul>
-						</div>
-					</li>
-				</ul>
-			</div>
-	
-		</nav>
-	
+{% block title %}控制台{% endblock %}
+
+{% block beforehead %} {% endblock %}
+
+{% block content %}
+
 	<!--  控制台模式 选择模块 -->
 		<hr>
 		<div class="uk-button-group">
@@ -110,52 +76,54 @@
 			</div>
 		</div>
 
-		
-		
-	<!-- js处理区 -->
-	<script type="text/javascript" charset="utf-8">
+{% endblock %}	
 
-        var back = document.getElementById('output0');
-		var back1 = document.getElementById('output1');
-        var backcontext = back.getContext('2d');
-		var backcontext1 = back1.getContext('2d');
-        var video = document.getElementsByTagName('video')[0];
-		var video1 = document.getElementsByTagName('video')[1];
-        
-		function change(a){
-			a.src="../static/img/1.jpg";
-		}
-		function change0(a){
-			a.src="../static/img/0.jpg";
-		}
-		
-        var success = function(stream){
-            video.src = window.URL.createObjectURL(stream);
-			video1.src = window.URL.createObjectURL(stream);
-        }
+{% block js0 %}
 
-        var draw = function(){
-            try{
-                backcontext.drawImage(video,0,0, back.width, back.height);
-				backcontext1.drawImage(video1,0,0, back1.width, back1.height);
-            }catch(e){
-                if (e.name == "NS_ERROR_NOT_AVAILABLE") {
-                    return setTimeout(draw, 90);
-                } else {
-                    throw e;
-                }
-            }
-            if(video.src){
-                localStorage.video=back.toDataURL("image/jpeg",0.5);
-				localStorage.video1=back1.toDataURL("image/jpeg",0.5);
-            }
-            setTimeout(draw, 90);
-        }
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia || navigator.msGetUserMedia;
-        navigator.getUserMedia({video:true, audio:false}, success, console.log);
-		draw();
-    </script>	
-	
-    </body>
-</html>
+	<!--  打开摄像头以及处理  -->
+		<script type="text/javascript" charset="utf-8">
+
+			var back = document.getElementById('output0');
+			var back1 = document.getElementById('output1');
+			var backcontext = back.getContext('2d');
+			var backcontext1 = back1.getContext('2d');
+			var video = document.getElementsByTagName('video')[0];
+			var video1 = document.getElementsByTagName('video')[1];
+			
+			function change(a){
+				a.src="../static/img/1.jpg";
+			}
+			function change0(a){
+				a.src="../static/img/0.jpg";
+			}
+			
+			var success = function(stream){
+				video.src = window.URL.createObjectURL(stream);
+				video1.src = window.URL.createObjectURL(stream);
+			}
+
+			var draw = function(){
+				try{
+					backcontext.drawImage(video,0,0, back.width, back.height);
+					backcontext1.drawImage(video1,0,0, back1.width, back1.height);
+				}catch(e){
+					if (e.name == "NS_ERROR_NOT_AVAILABLE") {
+						return setTimeout(draw, 90);
+					} else {
+						throw e;
+					}
+				}
+				if(video.src){
+					localStorage.video=back.toDataURL("image/jpeg",0.5);
+					localStorage.video1=back1.toDataURL("image/jpeg",0.5);
+				}
+				setTimeout(draw, 90);
+			}
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia || navigator.msGetUserMedia;
+			navigator.getUserMedia({video:true, audio:false}, success, console.log);
+			draw();
+			
+		</script>
+
+{% endblock %}	

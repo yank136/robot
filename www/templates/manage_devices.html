@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title></title>
-        <link rel="stylesheet" href="../static/css/uikit.min.css" />
-		<link rel="stylesheet" href="../static/css/components/search.css" />
-		<link rel="stylesheet" href="../static/css/components/slideshow.css" />
-		<link rel="stylesheet" href="../static/css/components/slidenav.css" />
-		<link rel="stylesheet" href="../static/css/components/dotnav.css" />
-        <script src="../static/js/jquery.js"></script>
-		<script src="../static/js/vue.min.js"></script>
-		<script src="../static/js/awesome.js"></script>
-        <script src="../static/js/uikit.min.js"></script>
-		<script src="../static/js/components/autocomplete.js"></script>
-        <script src="../static/js/components/search.js"></script>
-		<script src="../static/js/components/slideshow.js"></script>
-		<script src="../static/js/components/slideshow-fx.js"></script>
+{% extends '__base__.html' %}
 
-	<!-- js处理模块 -->
+{% block title %}设备管理{% endblock %}
+
+{% block js %}
+
 		<script>
 
 		function initVM(data) {
@@ -41,32 +28,10 @@
 		});
 
 		</script>
-		
-    </head>
-    <body>
-	
-	<!-- 主页和用户中心 导航 -->
-		<nav class="uk-navbar">
-		
-			<ul class="uk-navbar-nav">
-				<li><a href="/"><i class="uk-icon-home"></i> Home</a></li>
-			</ul>
-	
-			<div class="uk-navbar-flip">
-				<ul class="uk-navbar-nav">
-					<li class="uk-parent" data-uk-dropdown>
-						<a href=""><i class="uk-icon-user"></i> admin</a>
-						<div class="uk-dropdown uk-dropdown-navbar">
-							<ul class="uk-nav uk-nav-navbar">
-								<li><a href="#"><i class="uk-icon-sign-out"></i> 登出</a></li>
-								<li><a href="/console"><i class="uk-icon-gears"></i> 控制台</a></li>
-							</ul>
-						</div>
-					</li>
-				</ul>
-			</div>
-	
-		</nav>
+
+{% endblock %}		
+
+{% block content %}
 	
 	<!-- 用户设备选择板块 -->
 	    <div class="uk-width-1-1 uk-margin-bottom">
@@ -108,41 +73,5 @@
 				</tbody>
 			</table>
 		</div>		
-	
-	<!--  页脚板块 -->	
-		<ul class="uk-nav uk-nav-side uk-nav-parent-icon" data-uk-nav>
-			<li><a href="">Item</a></li>
-			<li class="uk-active"><a href="">Active</a></li>
 
-			<li class="uk-parent">
-				<a href="#">Parent</a>
-				<ul class="uk-nav-sub">
-					<li><a href="">Sub item</a></li>
-					<li><a href="">Sub item</a>
-						<ul>
-							<li><a href="">Sub item</a></li>
-							<li><a href="">Sub item</a></li>
-						</ul>
-					</li>
-				</ul>
-			</li>
-
-			<li class="uk-parent">
-				<a href="#">Parent</a>
-				<ul class="uk-nav-sub">
-					<li><a href="">Sub item</a></li>
-					<li><a href="">Sub item</a></li>
-				</ul>
-			</li>
-
-			<li><a href="">Item</a></li>
-
-			<li class="uk-nav-header">Header</li>
-			<li class="uk-parent"><a href=""><i class="uk-icon-star"></i> Parent</a></li>
-			<li><a href=""><i class="uk-icon-twitter"></i> Item</a></li>
-			<li class="uk-nav-divider"></li>
-			<li><a href=""><i class="uk-icon-rss"></i> Item</a></li>
-		</ul>
-		
-    </body>
-</html>
+{% endblock %}		
