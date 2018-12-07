@@ -1,0 +1,71 @@
+<html>
+<head>
+
+<title>R_C</title>
+
+
+
+<script src="../static/js/vue.min.js"></script>
+<script src="../static/js/vue-resource.min.js"></script>
+
+<style type="text/css">
+table,td{
+padding:10px;
+}
+</style>
+
+
+	
+</head>
+
+<body>
+<form id="vm">
+	<table id="table" align="center">
+		<tr>
+			<td></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" @click="post(8)"/></td><td></trd>
+		</tr>
+		<tr>
+			<td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" @click="post(4)"/></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" @click="post(5)"/></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" @click="post(6)"/></trd>
+		</tr>
+		<tr>
+			<td></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" @click="post(2)"/></td><td></trd>
+		</tr>
+	</table>
+	<div align="center"><input v-model="state"/></div>
+	</form>
+	
+	<script>
+	
+	function change(a)
+{
+	a.src="../static/img/1.jpg";
+}
+function change0(a)
+{
+	a.src="../static/img/0.jpg";
+}
+	
+	var vm = new Vue({
+	    el:'#vm',
+	    data:{
+	        state : 0
+	    },
+	    methods:{
+	        post:function(value){
+			this.state=value;
+			var data={
+			state : value
+			};
+	            //发送 post 请求
+	            this.$http.post('/api/test',data).then(function(res){    
+                },function(res){
+                    console.log(res.status);
+                });
+	        }
+	    }
+	});
+</script>
+	
+</body>
+
+</html>
