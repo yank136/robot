@@ -16,6 +16,8 @@ from apis import APIValueError, APIResourceNotFoundError, APIError,APIPermission
 from models import User, Comment, Robot
 from config import configs
 
+robot={'state': 0}
+
 COOKIE_NAME = 'awesession'
 _COOKIE_KEY = configs.session.secret
 
@@ -189,6 +191,23 @@ async def userAuthenticate(*,name,passwd):
     r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
     return r
 
+
+''' test '''
+@get('/test')
+def test():
+    return {
+            '__template__' : 'test.html'
+    }
+
+@post('/api/test')
+def postTest(*,state):
+    robot['state']=state
+    return robot
+
+@get('/api/test')
+def getTest():
+    r=robot
+    return r
 
 
 '''  
