@@ -210,7 +210,15 @@ def getTest():
     return r
 
 
+''' feedback status '''
+
+@get('/api/status/{key}/{value}')
+def fbStatus(*,key,value):
+    robot[key]=value
+    return robot
+
 '''  
+
 @get('/')
 def index(request):
     return {
