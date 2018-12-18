@@ -11,7 +11,8 @@
 		<link rel="stylesheet" href="../static/css/components/form-password.css" />
 		<script src="../static/js/jquery.js"></script>
 		<script src="../static/js/vue.min.js"></script>
-		<script src="../static/js/awesome.js"></script>
+		<script src="../static/js/vue-resource.min.js"></script>
+
 		<script src="../static/js/uikit.min.js"></script>
 		<script src="../static/js/components/autocomplete.js"></script>
 		<script src="../static/js/components/search.js"></script>
@@ -22,32 +23,44 @@
 	<!-- js处理板块 -->
 		<script>
 
-		$(function() {
-			var vmAuth = new Vue({
-				el: '#vm',
-				data: {
-					name: '',
-					passwd: ''
+		window.onload=function(){
+			var vm=new Vue({
+				el:'#vm',
+				data:{
+					name:'',
+					passwd:'',
+					url:'/api/authenticate',
+					error:'',
+					isHide:'none',
 				},
-				methods: {
-					submit: function(event) {
-						event.preventDefault();
-						var
-							$form = $('#vm'),
-							name = this.name.trim(),
-							data = {
-								name: name,
-								passwd: this.passwd
-							};
-						$form.postJSON('/api/authenticate', data, function(err, result) {
-							if (! err) {
+				methods:{
+					post:function(){
+						var data={
+							name:this.name,
+							passwd:this.passwd,
+
+						};
+
+						this.$http.post(this.url,data).then(function(res){
+							console.log(res);
+							console.log(1);
+							if(res.body.error){
+								this.error=res.body.message;
+								console.log(this.error);
+								this.isHide='block';
+							}else{
+								this.isHide='none';
 								location.assign('/');
 							}
+						},function(){
+								this.error='网络出现问题';
+								console.log(this.error);
+								this.isHide='block';
 						});
 					}
 				}
 			});
-		});
+		}
 
 		</script>
 	</head>
@@ -57,8 +70,10 @@
 		<div class="uk-vertical-align uk-text-center uk-height-1-1">
 			<div class="uk-vertical-align-middle" style="width: 320px">
 				<p><a href="/" class="uk-icon-button"><i class="uk-icon-home"></i></a> <a href="/">Home</a></p>
-				<form id="vm" v-on="submit: submit" class="uk-panel uk-panel-box uk-form">
-					<div class="uk-alert uk-alert-danger uk-hidden"></div>
+
+				<form id="vm" v-on:submit.prevent class="uk-panel uk-panel-box uk-form">
+					<div class="uk-alert uk-alert-danger "
+							v-bind:style="{display:isHide}">{{error}}</div>
 					<div class="uk-form-row">
 						<div class="uk-form-icon uk-width-1-1">
 							<i class="uk-icon-user"></i>
@@ -72,9 +87,10 @@
 						</div>
 					</div>
 					<div class="uk-form-row">
-						<button type="submit" class="uk-width-1-1 uk-button uk-button-primary uk-button-large"><i class="uk-icon-sign-in"></i> 登录</button>
+						<button @click="post()" class="uk-width-1-1 uk-button uk-button-primary uk-button-large"><i class="uk-icon-sign-in"></i> 登录</button>
 					</div>
 				</form>
+
 			</div>
 		</div>
 	</body>
