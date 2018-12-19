@@ -98,8 +98,8 @@
 			}
 			
 			var success = function(stream){
-				video.src = window.URL.createObjectURL(stream);
-				video1.src = window.URL.createObjectURL(stream);
+				video.srcObject = stream;
+				video1.srcObject = stream;
 			}
 
 			var draw = function(){
@@ -120,7 +120,7 @@
 				setTimeout(draw, 90);
 			}
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia || navigator.msGetUserMedia;
+			navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.mediaDevices.getUserMedia;
 			navigator.getUserMedia({video:true, audio:false}, success, console.log);
 			draw();
 			
