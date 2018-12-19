@@ -209,6 +209,11 @@ def getTest():
     r=robot
     return r
 
+@get('/ajax/api')
+def ajaxApi():
+    return {
+            '__template__' : 'getapi.html'
+    }
 
 ''' feedback status '''
 
