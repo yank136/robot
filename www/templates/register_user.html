@@ -4,47 +4,62 @@
 
 {% block beforehead %} {% endblock %}
 
-{% block js %}
+{% block fun %}
 
-	<script>
 	<!-- 用户注册 -->
-	$(function () {
 		var vm = new Vue({
 			el: '#vm',
 			data: {
 				name: '',
 				password1: '',
-				password2: ''
+				password2: '',
+				url:'/api/users',
+				error:'',
+				isHide:'none',
 			},
 			methods: {
-				submit: function (event) {
-					event.preventDefault();
-					var $form = $('#vm');
+				showError:function(res,message){
+					if(res!=null){
+						this.error=res.body.message;
+					}else{
+						this.error=message;
+						console.log(this.error);
+						this.isHide='block';
+					}
+					return 0;
+				},
+				submit: function () {
 					if (! this.name.trim()) {
-						return $form.showFormError('请输入昵称');
+						this.showError(null,'请输入昵称');
+						return;
 					}
 					if (this.password1.length < 6) {
-						return $form.showFormError('口令长度至少为6个字符');
+						this.showError(null,'口令长度至少为6个字符');
+						return;
 					}
 					if (this.password1 !== this.password2) {
-						return $form.showFormError('两次输入的口令不一致');
+						this.showError(null,'两次输入的口令不一致');
+						return;
+					}else{
+						var data={
+							name:this.name.trim(),
+							passwd:this.password1,
+						};
+						this.$http.post(this.url,data).then(function(res){
+							console.log(res);
+							if(res.body.error){
+								this.showError(res,'');
+							}else{
+								this.isHide='none';
+								location.assign('/');
+							}
+						},function(){
+							this.showError(null,'网络出现问题');
+						});
 					}
-					$form.postJSON('/api/users', {
-						name: this.name.trim(),
-						passwd: this.password1
-					}, function (err, r) {
-						if (err) {
-							return $form.showFormError(err);
-						}
-						return location.assign('/');
-					});
 				}
 			}
 		});
-		$('#vm').show();
-	});
-
-	</script>
 	
 {% endblock %}
 	
@@ -53,8 +68,9 @@
 	<!--  用户注册板块  -->
 	<div class="uk-width-2-3">
 		<h1>用户注册</h1>
-		<form id="vm" v-on="submit:submit" class="uk-form uk-form-stacked">
-			<div class="uk-alert uk-alert-danger uk-hidden"></div>
+		<form id="vm"  v-on:submit.prevent class="uk-form uk-form-stacked">
+			<div class="uk-alert uk-alert-danger "
+					v-bind:style="{display:isHide}">{{error}}</div>
 			
 			<div class="uk-form-row">
 				<label class="uk-form-lable">昵称：</label>
@@ -84,7 +100,7 @@
 			</div>
 			
 			<div class="uk-form-row">
-				<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-registered"></i> 注册</button>
+				<button @click="submit" type="submit" class="uk-button uk-button-primary"><i class="uk-icon-registered"></i> 注册</button>
 			</div>
 			
 		</form>

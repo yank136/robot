@@ -4,45 +4,58 @@
 
 {% block beforehead %} {% endblock %}
 
-{% block js %}
-
-	<script>
-
-	$(function () {
+{% block fun %}
+	<!--  设备注册  -->
 		var vm = new Vue({
 			el: '#vm',
 			data: {
 				name: '',
-				r_type: '',
-				remarks: ''
+				r_type:'',
+				remarks:'',
+				url:'/api/devices',
+				error:'',
+				isHide:'none',
 			},
 			methods: {
-				submit: function (event) {
-					event.preventDefault();
-					var $form = $('#vm');
+				showError:function(res,message){
+					if(res!=null){
+						this.error=res.body.message;
+					}else{
+						this.error=message;
+						console.log(this.error);
+						this.isHide='block';
+					}
+					return 0;
+				},
+				submit: function () {
 					if (! this.name.trim()) {
-						return $form.showFormError('请输入昵称');
+						this.showError(null,'请输入名称');
+						return;
 					}
-					if (! this.r_type.trim()) {
-						return $form.showFormError('请选择设备类型');
+					if (!this.r_type.trim()) {
+						this.showError(null,'请选择设备类型');
+						return;
+					}else{
+						var data={
+							name:this.name.trim(),
+							r_type:this.r_type,
+							remarks:this.remarks,
+						};
+						this.$http.post(this.url,data).then(function(res){
+							console.log(res);
+							if(res.body.error){
+								this.showError(res,'');
+							}else{
+								this.isHide='none';
+								location.assign('/manage/devices');
+							}
+						},function(){
+							this.showError(null,'网络出现问题');
+						});
 					}
-					$form.postJSON('/api/devices', {
-						name: this.name.trim(),
-						r_type: this.r_type,
-						remarks: this.remarks
-					}, function (err, r) {
-						if (err) {
-							return $form.showFormError(err);
-						}
-						return location.assign('/manage/devices');
-					});
 				}
 			}
 		});
-		$('#vm').show();
-	});
-
-	</script>
 	
 {% endblock %}
 
@@ -51,8 +64,9 @@
 	<!--  设备板块  -->
 	<div class="uk-width-2-3">
 		<h1>设备注册</h1>
-		<form id="vm" v-on="submit:submit" class="uk-form uk-form-stacked">
-			<div class="uk-alert uk-alert-danger uk-hidden"></div>
+		<form id="vm"  v-on:submit.prevent class="uk-form uk-form-stacked">
+			<div class="uk-alert uk-alert-danger" 
+					v-bind:style="{display:isHide}">{{error}}</div>
 			
 			<div class="uk-form-row">
 				<label class="uk-form-lable">设备名：</label>
@@ -80,7 +94,7 @@
 			</div>
 			
 			<div class="uk-form-row">
-				<button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-registered"></i> 注册</button>
+				<button @click="submit()" type="submit" class="uk-button uk-button-primary"><i class="uk-icon-registered"></i> 注册</button>
 			</div>
 			
 		</form>

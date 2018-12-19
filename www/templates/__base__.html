@@ -14,7 +14,8 @@
 		<link rel="stylesheet" href="../static/css/components/form-password.css" />
         <script src="../static/js/jquery.js"></script>
 		<script src="../static/js/vue.min.js"></script>
-		<script src="../static/js/awesome.js"></script>
+		<script src="../static/js/vue-resource.min.js"></script>
+
         <script src="../static/js/uikit.min.js"></script>
 		<script src="../static/js/components/autocomplete.js"></script>
         <script src="../static/js/components/search.js"></script>
@@ -29,32 +30,43 @@
 	<!-- 登录js处理板块 -->
 		<script>
 			<!-- 登录 -->
-			$(function() {
+			window.onload=function(){
 				var vmAuth = new Vue({
-					el: '#vm0',
-					data: {
-						name: '',
-						passwd: ''
+					el:'#vm0',
+					data:{
+						name:'',
+						passwd:'',
+						url:'/api/authenticate',
+						error:'',
+						isHide:'none',
 					},
-					methods: {
-						submit: function(event) {
-							event.preventDefault();
-							var
-								$form = $('#vm0'),
-								name = this.name.trim(),
-								data = {
-									name: name,
-									passwd: this.passwd
-								};
-							$form.postJSON('/api/authenticate', data, function(err, result) {
-								if (! err) {
+					methods:{
+						post:function(){
+							var data={
+								name:this.name,
+								passwd:this.passwd,
+							};
+							this.$http.post(this.url,data).then(function(res){
+								console.log(res);
+								console.log(1);
+								if(res.body.error){
+									this.error=res.body.message;
+									this.isHide='block';
+								}else{
+									this.isHide='none';
 									location.reload();
 								}
+							},function() {
+								this.error='网络出现问题';
+								this.isHide='block';
 							});
 						}
 					}
 				});
-			});
+
+	{% block fun %}<!-- function板块 -->{% endblock %}
+
+			}
 		</script>
 		
     </head>
@@ -98,8 +110,10 @@
 	<!-- 登录板块 -->	
 		<div id="offcanvas" class="uk-offcanvas">
 			<div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
-				<form id="vm0" v-on="submit: submit" class="uk-panel uk-panel-box uk-form">
-					<div class="uk-alert uk-alert-danger uk-hidden"></div>
+				
+				<form id="vm0" v-on:submit.prevent  class="uk-panel uk-panel-box uk-form">
+					<div class="uk-alert uk-alert-danger"
+							v-bind:style="{display:isHide}">{{error}}</div>
 					<div class="uk-form-row">
 						<div class="uk-form-icon uk-width-1-1">
 							<i class="uk-icon-user"></i>
@@ -113,9 +127,10 @@
 						</div>
 					</div>
 					<div class="uk-form-row">
-						<button type="submit" class="uk-width-1-1 uk-button uk-button-primary uk-button-large"><i class="uk-icon-sign-in"></i> 登录</button>
+						<button @click="post" type="submit" class="uk-width-1-1 uk-button uk-button-primary uk-button-large"><i class="uk-icon-sign-in"></i> 登录</button>
 					</div>
 				</form>
+
 			</div>
 		</div>
 		

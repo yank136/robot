@@ -1,0 +1,40 @@
+<html>
+<head>
+
+<title>R_C</title>
+
+
+
+<script src="../static/js/vue.min.js"></script>
+<script src="../static/js/vue-resource.min.js"></script>
+
+<script>
+	function api()
+	{
+		var xh=new XMLHttpRequest();
+		xh.onreadystatechange=function()
+		{
+			if(xh.readyState==4 && xh.status==200)
+			{
+				document.body.innerHTML=xh.responseText;
+			}
+		}
+		xh.open("GET","/api/test",true);
+		xh.send();
+	}
+	
+	var start=function(){
+		api();
+		setTimeout(start,10000);
+	}
+	
+	start();
+</script>
+	
+</head>
+
+<body>
+	<div id="api"></div>	
+</body>
+
+</html>
