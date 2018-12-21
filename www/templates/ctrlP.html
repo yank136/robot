@@ -44,28 +44,28 @@
 	<!--  视图区： 摄像头视频区|控制面板区|图像信息区|状态信息文本区 -->			
 		<div class="uk-grid uk-grid-small" data-uk-grid-margin>
 		<!-- 视频区 -->
-			<div class="uk-width-6-10 uk-text-center">
+			<div class="uk-width-7-10 uk-text-center">
 				<div class="uk-panel uk-panel-box">
 
-					<video autoplay id="sourcevid0" width="320" height="240"></video>
-					<video autoplay id="sourcevid1" width="320" height="240"></video>
+					<video style="margin-right: 2px; border-right: 1px solid gray" autoplay id="sourcevid0" width="400" height="300"></video>
+					<canvas style="margin-left: 2px; border-left: 1px solid gray" id="output0" width="400" height="300"></canvas>
 
 				</div>
 			</div>
 		<!-- 控制区 -->
-			<div class="uk-width-4-10">
+			<div class="uk-width-3-10">
 				<div class="uk-panel uk-panel-box">
 				
 					<form style="background-color:white">
-						<table id="table" width="320" height="240" align="center">
+						<table id="table" width="400" height="300" align="center">
 							<tr>
-								<td></td><td><img id="前" src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></a></td><td></trd>
+								<td></td><td><img id="前" src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=8" /></a></td><td></trd>
 							</tr>
 							<tr>
-								<td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></trd>
+								<td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=4" /></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=5" /></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=6" /></trd>
 							</tr>
 							<tr>
-								<td></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)"/></td><td></trd>
+								<td></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=2" /></td><td></trd>
 							</tr>
 						</table>
 					</form>
@@ -73,19 +73,18 @@
 				</div>
 			</div>
 		<!-- 图像区 -->
-			<div class="uk-width-6-10 uk-text-center">
+			<div class="uk-width-7-10 uk-text-center">
 				<div class="uk-panel uk-panel-box">
 				
-					<canvas id="output0" width="320" height="240"></canvas>
-					<canvas id="output1" width="320" height="240"></canvas>
+					<canvas style="background-color:white" id="output1" width="810" height="240"></canvas>
 				
 				</div>
 			</div>
 		<!-- 文本区 -->
-			<div class="uk-width-4-10">
+			<div class="uk-width-3-10">
 				<div class="uk-panel uk-panel-box">
 					<form style="background-color:white">
-						<canvas id="output" width="320" height="240"></canvas>
+						<canvas id="text" width="320" height="240"></canvas>
 					</form>
 				</div>
 			</div>
@@ -103,13 +102,110 @@
 
 			var back = document.getElementById('output0');
 			var back1 = document.getElementById('output1');
+			var text = document.getElementById('text');
 			var backcontext = back.getContext('2d');
-			var backcontext1 = back1.getContext('2d');
+			var ctx = back1.getContext('2d');
+			var te_tx = text.getContext('2d');
 			var video = document.getElementsByTagName('video')[0];
-			var video1 = document.getElementsByTagName('video')[1];
+			//var video1 = document.getElementsByTagName('video')[1];
 
 			var str='';
+			var str_text='';
 			var count=0;
+
+			//绘图初始化
+			var state=0;
+			var step=2;
+			var x=back1.width/2;
+			var y=back1.height/2;
+			var xa=ya=0;
+
+			var init = function(){
+				ctx.beginPath();
+	    		ctx.arc(x, y, 5, 0, 2*Math.PI, false);
+	    		ctx.fill();
+				ctx.moveTo(x,y);
+				str_text="position:"+"("+x+","+y+")";
+				te_tx.font="30px Arial";
+			}
+
+			var run = function(){
+				move(state);
+				console.log(state);
+				show_text();
+				setTimeout(run,211);
+			}
+
+			var show_text = function(){
+				str_text="position:"+"("+(x-back1.width/2)+","+(back1.height/2-y)+")";
+				te_tx.clearRect(0,0,text.width,text.height);
+				te_tx.fillText(str_text,0,30);
+			}
+
+			var move = function(i){
+				switch(i){
+					case 0: m_reset();break;
+					case 5: m_stop();break;
+					case 8: m_up();break;
+					case 2: m_down();break;
+					case 4: m_left();break;
+					case 6: m_right();break;
+					default:break;
+				}
+			}
+			var m_reset = function(){
+				xa=0;
+				ya=0;
+				x=back1.width/2;
+				y=back1.height/2;
+				ctx.clearRect(0,0,back1.width,back1.height);
+				init();
+			}
+
+			var m_stop = function(){
+				xa=0;
+				ya=0;
+				x+=xa;
+				y+=ya;
+				ctx.lineTo(x,y);
+				ctx.stroke();
+			}
+
+			var m_up = function(){
+				xa=0;
+				ya=-step;
+				x+=xa;
+				y+=ya;
+				ctx.lineTo(x,y);
+				ctx.stroke();
+			}
+
+			var m_down = function(){
+				xa=0;
+				ya=step;
+				x+=xa;
+				y+=ya;
+				ctx.lineTo(x,y);
+				ctx.stroke();
+			}
+
+			var m_left = function(){
+				xa=-step;
+				ya=0;
+				x+=xa;
+				y+=ya;
+				ctx.lineTo(x,y);
+				ctx.stroke();
+			}
+
+			var m_right = function(){
+				xa=step;
+				ya=0;
+				x+=xa;
+				y+=ya;
+				ctx.lineTo(x,y);
+				ctx.stroke();
+			}
 
 			function change(a){
 				a.src="../static/img/1.jpg";
@@ -120,13 +216,13 @@
 			
 			var success = function(stream){
 				video.srcObject = stream;
-				video1.srcObject = stream;
+				//video1.srcObject = stream;
 			}
 
 			var draw = function(){
 				try{
 					backcontext.drawImage(video,0,0, back.width, back.height);
-					backcontext1.drawImage(video1,0,0, back1.width, back1.height);
+					//backcontext1.drawImage(video1,0,0, back1.width, back1.height);
 				}catch(e){
 					if (e.name == "NS_ERROR_NOT_AVAILABLE") {
 						return setTimeout(draw, 100);
@@ -149,10 +245,10 @@
 	        		return setTimeout(identifyFace, 1000);
 	        	}
 	        	str='';
-	        	console.log(count);
-	            $('#output1').faceDetection(
+	        	//console.log(count);
+	            $('#output0').faceDetection(
 	                function (faces) {
-	                	console.log(faces);
+	                	//console.log(faces);
 	                	if(faces.length==0){
 	                		count++;
 	                		if(count>5){
@@ -182,6 +278,8 @@
 			navigator.getUserMedia({video:true, audio:false}, success, console.log);
 			draw();
 			identifyFace();
+			run();
+			init();
 		</script>
 
 {% endblock %}	
