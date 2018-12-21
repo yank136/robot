@@ -2,7 +2,22 @@
 
 {% block title %}控制台{% endblock %}
 
-{% block beforehead %} {% endblock %}
+{% block beforehead %}
+
+	<!--  人脸检测js  -->
+    <script src="../static/js/ccv.js"></script>
+    <script src="../static/js/jquery.facedetection.js"></script>
+    <script src="../static/js/cascade.js"></script>
+	<!--  标记css  -->
+	<style type="text/css">
+        .drawDiv{
+            position: absolute;
+            border: 3px solid red;
+        }
+
+    </style>
+
+{% endblock %}
 
 {% block content %}
 
@@ -74,6 +89,9 @@
 					</form>
 				</div>
 			</div>
+		<!-- 标记区 -->
+			<div class="marks">
+			</div>
 		</div>
 
 {% endblock %}	
@@ -89,7 +107,10 @@
 			var backcontext1 = back1.getContext('2d');
 			var video = document.getElementsByTagName('video')[0];
 			var video1 = document.getElementsByTagName('video')[1];
-			
+
+			var str='';
+			var count=0;
+
 			function change(a){
 				a.src="../static/img/1.jpg";
 			}
@@ -108,22 +129,59 @@
 					backcontext1.drawImage(video1,0,0, back1.width, back1.height);
 				}catch(e){
 					if (e.name == "NS_ERROR_NOT_AVAILABLE") {
-						return setTimeout(draw, 90);
+						return setTimeout(draw, 100);
 					} else {
 						throw e;
 					}
 				}
-				if(video.src){
+				/*if(video.srcObject){
 					localStorage.video=back.toDataURL("image/jpeg",0.5);
 					localStorage.video1=back1.toDataURL("image/jpeg",0.5);
-				}
-				setTimeout(draw, 90);
+				}*/
+				setTimeout(draw, 100);
 			}
+
+			//开始识别
+	        var identifyFace = function() {
+	        	//console.log(backcontext);
+	        	if(!video.srcObject)
+	        	{
+	        		return setTimeout(identifyFace, 1000);
+	        	}
+	        	str='';
+	        	console.log(count);
+	            $('#output1').faceDetection(
+	                function (faces) {
+	                	console.log(faces);
+	                	if(faces.length==0){
+	                		count++;
+	                		if(count>5){
+	                			document.getElementsByClassName('marks')[0].innerHTML=str;
+	                		}
+	                	}else {count=0;}
+	                    for (var i=0;i<faces.length;i++) {
+	                        //识别结果循环传入方法drawFace
+	                        //console.log(i);
+	                        drawFace(faces[i].offsetX, faces[i].offsetY, faces[i].width, faces[i].height);
+	                    }
+	                }
+	            );
+	            setTimeout(identifyFace, 200);
+	        }
+
+	        //图片识别区的x,y轴以及宽高,confidence表示自信程度
+	        function drawFace(x,y,width,height){
+	 			console.log('('+x+','+y+')');
+	            //将框框套上去
+	            str+='<div class="drawDiv" style="left:'+x+'px;top:'+y+'px;width:'+width+'px;height:'+height+'px;">'+'</div>'
+	            document.getElementsByClassName('marks')[0].innerHTML=str
+	        }
+
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
 			navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.mediaDevices.getUserMedia;
 			navigator.getUserMedia({video:true, audio:false}, success, console.log);
 			draw();
-			
+			identifyFace();
 		</script>
 
 {% endblock %}	
