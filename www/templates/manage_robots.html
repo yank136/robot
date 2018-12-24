@@ -1,6 +1,8 @@
 {% extends '__base__.html' %}
 
-{% block title %}设备管理{% endblock %}
+{% block title %}用户管理{% endblock %}
+
+{% block beforehead %} {% endblock %}
 
 {% block fun %}
 
@@ -8,8 +10,8 @@
 		var vm=new Vue({
 			el:'#vm',
 			data:{
-				devices:'',
-				url:'/api/devices',
+				robot:'',
+				url:'/api/robots',
 				state:1,
 				msg:'正在加载...',
 			},
@@ -20,7 +22,7 @@
 				get:function(){
 					this.$http.get(this.url).then(function(res){
 						console.log(res.bodyText);
-						this.devices=res.body.devices;
+						this.robot=res.body.robot;
 						this.state=0;
 					},function(){
 						console.log("网络出现问题...");
@@ -31,6 +33,13 @@
 			}
 		});
 
+		var start=function(){
+			vm.get();
+			setTimeout(start,5000);
+		}
+
+		start();
+	
 {% endblock %}		
 
 {% block content %}
@@ -39,47 +48,38 @@
 	    <div class="uk-width-1-1 uk-margin-bottom">
 			<div class="uk-panel uk-panel-box">
 				<ul class="uk-breadcrumb">
-					<li class="uk-active"><span>设备</span></li>
+					<li><a href="/manage/devices">设备</a></li>
 					<li><a href="/manage/users">用户</a></li>
-					<li><a href="/manage/robots">下位机</a></li>
+					<li class="uk-active"><span>下位机</span></li>
 				</ul>
 			</div>
 		</div>
 	
-	<!-- 设备管理板块 -->
+	<!-- 用户管理板块 -->
 		<div id="vm">
 			<div v-if="state" class="uk-width-1-1 uk-text-center">
-				<span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i>  {{ msg }}</span>
+				<span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> {{ msg }}</span>
 			</div>
 
 			<div v-else class="uk-width-1-1">
 				<table class="uk-table uk-table-hover">
 					<thead>
 						<tr>
-							<th class="uk-width-4-10">ID</th>
-							<th class="uk-width-4-10">名称</th>
-							<th class="uk-width-2-10">类型</th>
+							<th class="uk-width-4-10">参数</th>
+							<th class="uk-width-4-10">状态</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="decive in devices" >
-							<td>
-								<span>{{ decive.id }}</span>
-							</td>
-							<td>
-								<span>{{ decive.name }}</span>
-							</td>
-							<td>
-								<span>{{decive.r_type}}</span>
-							</td>
-						</tr>
-						
-						<tr>
-							<td><a href="/registerDevice" class="uk-icon-plus"> 添加设备</a><td>
-						</tr>
-						
+			          <tr v-for="(value,key) in robot" >
+			            <td>
+			              <span>{{ key }}</span>
+			            </td>
+			            <td>
+			              <span>{{ value }}</span>
+			            </td>
+			          </tr>
 					</tbody>
 				</table>
 			</div>		
 		</div>
-{% endblock %}		
+{% endblock %}
