@@ -16,7 +16,16 @@ from apis import APIValueError, APIResourceNotFoundError, APIError,APIPermission
 from models import User, Comment, Robot
 from config import configs
 
-robot={'state': 0}
+robot={'state': 0,
+       'online':0,
+       'led':0,
+       'alarm':0,
+       'light':0,
+       'tem':0,
+       'hum':0,
+       'pm2.5':0,
+       'position':'(0,0)',
+       }
 
 COOKIE_NAME = 'awesession'
 _COOKIE_KEY = configs.session.secret
@@ -114,6 +123,12 @@ def manageDevices():
             '__template__' : 'manage_devices.html'
     }
     
+@get('/manage/robots')
+def manageRobots():
+    return {
+            '__template__' : 'manage_robots.html'
+    }
+    
 @get('/signin')
 def signin():
     return {
@@ -139,6 +154,10 @@ async def getUsers():
 async def getDevices():
     devices=await Robot.findAll()
     return dict(devices=devices)
+
+@get('/api/robots')
+def getRobots():
+    return dict(robot=robot)
 
 ''' post_api '''
 
@@ -218,7 +237,7 @@ def ajaxApi():
 ''' feedback status '''
 
 @get('/api/status/{key}/{value}')
-def fbStatus(*,key,value):
+def rbStatus(*,key,value):
     robot[key]=value
     return robot
 
