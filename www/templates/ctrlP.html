@@ -108,6 +108,7 @@
 			var te_tx = text.getContext('2d');
 			var video = document.getElementsByTagName('video')[0];
 
+			//状态和位置信息提交
 			var vm=new Vue({
 				el:'#vm',
 				data:{
@@ -146,16 +147,17 @@
 				}
 			});
 
-			var str='';
-			var pos='';
-			var count=0;
+			var str='';//标记html内容
+			var pos='';//位置(x,y)
+			var count=0;//人脸丢失计数
 
 			//绘图初始化
-			var step=2;
+			var step=2;//仿真位移速度
 			var x=back1.width/2;
-			var y=back1.height/2;
-			var xa=ya=0;
+			var y=back1.height/2;//原点(0,0)
+			var xa=ya=0;//xy改变量
 
+			//轨迹原点和位置信息初始化
 			var init = function(){
 				ctx.beginPath();
 	    		ctx.arc(x, y, 5, 0, 2*Math.PI, false);
@@ -165,6 +167,7 @@
 				te_tx.font="30px Arial";
 			}
 
+			//轨迹记录、位置信息
 			var run = function(){
 				move(vm.state);
 				//console.log(vm.state);
@@ -172,6 +175,7 @@
 				setTimeout(run,211);
 			}
 
+			//位置信息显示与提交
 			var show_text = function(){
 				pos="("+(x-back1.width/2)+","+(back1.height/2-y)+")";
 				te_tx.clearRect(0,0,text.width,text.height);
@@ -180,17 +184,20 @@
 				vm.position();
 			}
 
+			//运动状态解析
 			var move = function(i){
 				switch(i){
-					case 0: m_reset();break;
-					case 5: m_stop();break;
-					case 8: m_up();break;
-					case 2: m_down();break;
-					case 4: m_left();break;
-					case 6: m_right();break;
+					case 0: m_reset();break;//初始状态
+					case 5: m_stop();break;//停
+					case 8: m_up();break;//前
+					case 2: m_down();break;//后
+					case 4: m_left();break;//左
+					case 6: m_right();break;//右
 					default:break;
 				}
 			}
+
+			//复位
 			var m_reset = function(){
 				xa=0;
 				ya=0;
@@ -200,6 +207,7 @@
 				init();
 			}
 
+			//停
 			var m_stop = function(){
 				xa=0;
 				ya=0;
@@ -208,7 +216,7 @@
 				ctx.lineTo(x,y);
 				ctx.stroke();
 			}
-
+			//前
 			var m_up = function(){
 				xa=0;
 				ya=-step;
@@ -217,7 +225,7 @@
 				ctx.lineTo(x,y);
 				ctx.stroke();
 			}
-
+			//后
 			var m_down = function(){
 				xa=0;
 				ya=step;
@@ -226,7 +234,7 @@
 				ctx.lineTo(x,y);
 				ctx.stroke();
 			}
-
+			//左
 			var m_left = function(){
 				xa=-step;
 				ya=0;
@@ -235,7 +243,7 @@
 				ctx.lineTo(x,y);
 				ctx.stroke();
 			}
-
+			//右
 			var m_right = function(){
 				xa=step;
 				ya=0;
@@ -245,18 +253,12 @@
 				ctx.stroke();
 			}
 
-			function change(a){
-				a.src="../static/img/1.jpg";
-			}
-			function change0(a){
-				a.src="../static/img/0.jpg";
-			}
-			
+			//摄像头采集数据流
 			var success = function(stream){
 				video.srcObject = stream;
 				//video1.srcObject = stream;
 			}
-
+			//数据流显示至canva，备人脸检测
 			var draw = function(){
 				try{
 					backcontext.drawImage(video,0,0, back.width, back.height);
@@ -275,7 +277,7 @@
 				setTimeout(draw, 100);
 			}
 
-			//开始识别
+			//开始人脸检测
 	        var identifyFace = function() {
 	        	//console.log(backcontext);
 	        	if(!video.srcObject)
@@ -303,18 +305,21 @@
 	            setTimeout(identifyFace, 200);
 	        }
 
-	        //图片识别区的x,y轴以及宽高,confidence表示自信程度
+	        //图片识别区的x,y轴以及宽高
 	        function drawFace(x,y,width,height){
 	 			console.log('('+x+','+y+')');
-	            //将框框套上去
+	            //标记人脸框
 	            str+='<div class="drawDiv" style="left:'+x+'px;top:'+y+'px;width:'+width+'px;height:'+height+'px;">'+'</div>'
 	            document.getElementsByClassName('marks')[0].innerHTML=str
 	        }
 
+	        //获取摄像设备、打开
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
 			navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.mediaDevices.getUserMedia;
 			navigator.getUserMedia({video:true, audio:false}, success, console.log);
+			//canvas
 			draw();
+			//人脸检测
 			identifyFace();
 			run();
 			init();
