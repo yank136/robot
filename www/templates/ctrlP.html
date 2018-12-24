@@ -53,19 +53,19 @@
 				</div>
 			</div>
 		<!-- 控制区 -->
-			<div class="uk-width-3-10">
+			<div id="vm" class="uk-width-3-10">
 				<div class="uk-panel uk-panel-box">
 				
 					<form style="background-color:white">
 						<table id="table" width="400" height="300" align="center">
 							<tr>
-								<td></td><td><img id="前" src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=8" /></a></td><td></trd>
+								<td></td><td><img v-bind:src="src8" @mousedown="src8=srcd" @mouseup="src8=srcu" @click="state=8,get()" /></a></td><td></trd>
 							</tr>
 							<tr>
-								<td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=4" /></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=5" /></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=6" /></trd>
+								<td><img img v-bind:src="src4" @mousedown="src4=srcd" @mouseup="src4=srcu" @click="state=4,get()" /></td><td><img img v-bind:src="src5" @mousedown="src5=srcd" @mouseup="src5=srcu" @click="state=5,get()" /></td><td><img img v-bind:src="src6" @mousedown="src6=srcd" @mouseup="src6=srcu" @click="state=6,get()" /></trd>
 							</tr>
 							<tr>
-								<td></td><td><img src="../static/img/0.jpg" onmousedown="change(this)" onmouseup="change0(this)" onclick="state=2" /></td><td></trd>
+								<td></td><td><img img v-bind:src="src2" @mousedown="src2=srcd" @mouseup="src2=srcu" @click="state=2,get()"/></td><td></trd>
 							</tr>
 						</table>
 					</form>
@@ -107,14 +107,50 @@
 			var ctx = back1.getContext('2d');
 			var te_tx = text.getContext('2d');
 			var video = document.getElementsByTagName('video')[0];
-			//var video1 = document.getElementsByTagName('video')[1];
+
+			var vm=new Vue({
+				el:'#vm',
+				data:{
+					src8:'../static/img/0.jpg',
+					src2:'../static/img/0.jpg',
+					src4:'../static/img/0.jpg',
+					src6:'../static/img/0.jpg',
+					src5:'../static/img/0.jpg',
+					srcd:'../static/img/1.jpg',
+					srcu:'../static/img/0.jpg',
+					urlS:'/api/status/state/',
+					state:0,
+					urlP:'/api/status/position/',
+					pos:'',
+				},
+				mounted:function(){
+					this.get();
+				},
+				methods:{										
+					get:function(){
+						var urlS=this.urlS+this.state;
+						this.$http.get(urlS).then(function(res){
+							//console.log(res.bodyText);
+						},function(){
+							console.log("网络出现问题...");
+						});
+					},
+					position:function(){
+						var urlP=this.urlP+pos;
+						this.$http.get(urlP).then(function(res){
+							//console.log(res.bodyText);
+						},function(){
+							console.log("网络出现问题...");
+						});
+					}
+				}
+			});
 
 			var str='';
-			var str_text='';
+			var pos='';
 			var count=0;
 
 			//绘图初始化
-			var state=0;
 			var step=2;
 			var x=back1.width/2;
 			var y=back1.height/2;
@@ -125,21 +161,23 @@
 	    		ctx.arc(x, y, 5, 0, 2*Math.PI, false);
 	    		ctx.fill();
 				ctx.moveTo(x,y);
-				str_text="position:"+"("+x+","+y+")";
+				pos="("+x+","+y+")";
 				te_tx.font="30px Arial";
 			}
 
 			var run = function(){
-				move(state);
-				console.log(state);
+				move(vm.state);
+				//console.log(vm.state);
 				show_text();
 				setTimeout(run,211);
 			}
 
 			var show_text = function(){
-				str_text="position:"+"("+(x-back1.width/2)+","+(back1.height/2-y)+")";
+				pos="("+(x-back1.width/2)+","+(back1.height/2-y)+")";
 				te_tx.clearRect(0,0,text.width,text.height);
-				te_tx.fillText(str_text,0,30);
+				te_tx.fillText(pos,0,30);
+				vm.pos=pos;
+				vm.position();
 			}
 
 			var move = function(i){

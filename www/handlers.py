@@ -16,15 +16,16 @@ from apis import APIValueError, APIResourceNotFoundError, APIError,APIPermission
 from models import User, Comment, Robot
 from config import configs
 
-robot={'state': 0,
-       'online':0,
-       'led':0,
-       'alarm':0,
-       'light':0,
-       'tem':0,
-       'hum':0,
-       'pm2.5':0,
-       'position':'(0,0)',
+#存储下位机参数状态
+robot={'state': 0,  #运行状态（8前/2后 4左/6右 5/停）
+       'online':0,  #在线状态(0/1)
+       'led':0,     #led状态(0/1)
+       'alarm':0,   #蜂鸣器状态(0/1)
+       'light':0,   #光照强度值（0~255）
+       'tem':0,     #温度值(-30~100)
+       'hum':0,     #相对湿度值(0~255)
+       'pm2.5':0,   #pm2.5值(0~255)
+       'position':'(0,0)',  #位置(x,y)
        }
 
 COOKIE_NAME = 'awesession'
@@ -235,7 +236,16 @@ def ajaxApi():
     }
 
 ''' feedback status '''
-
+'''
+/api/status/online/{value}    #在线
+/api/status/led/{value}       #led
+/api/status/alarm/{value}     #蜂鸣器
+/api/status/light/{value}     #光照强度
+/api/status/tem/{value}       #温度
+/api/status/hum/{value}       #相对湿度
+/api/status/pm2.5/{value}     #pm2.5
+/api/status/position/{(x,y)}  #位置
+'''
 @get('/api/status/{key}/{value}')
 def rbStatus(*,key,value):
     robot[key]=value
